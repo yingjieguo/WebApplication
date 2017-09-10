@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Start with your username</title>
+    <link rel="stylesheet" type="text/css" href="newsstylesheet.css">
+</head>
+
+<body>
+   <div class = "login">
+        <form action="login.php" method = "POST">
+    		
+                <h1>Welcome to the blog<br></h1>
+                   <p><Strong>Login :</Strong></p>
+                   <p>Username:
+                   <input type="text" name="user" /></p>
+                   <p>Password:
+                   <input type="password" name="password" />
+                   <input type="submit" value="Log in"/></p>
+                
+                   
+         </form>
+    </div>
+                   
+                 <br><br>
+    <div class = "resetpassword">
+          <p><STRONG>Want to reset your password?</STRONG></p>
+          <form action="reset.php" method="POST">
+					
+					<p>Your username: 
+					<input type="text" name="username" size="20" /><br/></p>
+					<p>New Password: 
+					<input type="password" name="newpassword" size="20" /><br /></p>
+					<p>Confirm New Password: 
+					<input type="password" name="confirmnewpassword" size="20" />
+					<input type="submit" name="ResetPassword" value=" Reset Password "/></p>
+           </form>
+               
+    </div>
+
+		<br>
+            
+    <div class ="signup">
+    		<p><STRONG>Want to create a new account?</STRONG></p>
+    		<form action="newuser.php" method = "POST">
+    			<p> Sign up:
+                 <input type="text" name="newuser"/></p>
+                 <p>Password:
+                 <input type="password" name="newpassword" />
+                 <input type="submit" value="Sign up"/> </p>            
+    		</form>
+   </div>
+
+	
+</body>
+</html>

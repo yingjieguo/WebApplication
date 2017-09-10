@@ -1,0 +1,17 @@
+Team members:
+Zhen Cheng, Yingjie Guo
+
+http://ec2-54-244-11-86.us-west-2.compute.amazonaws.com/~joecz/mod3_group/home.php
+
+Functionality:
+
+Register new user, user/guest login, add/edit/delete stories, add/edit/delete comments, search, reset password.
+
+
+
+Log in info - user/password combinations:
+test/testtest
+aaaaa/bbbbb
+bbb/bbb
+ccc/ccc
+aaa/aaa

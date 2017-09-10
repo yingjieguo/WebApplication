@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Analysis</title>
+	<style type="text/css">
+		body{
+
+		}
+		div#main{
+
+		}
+	</style>
+</head>
+<body>
+
+<?php
+
+       require 'database.php';
+       $stmt = $mysqli->prepare("select ammo, soldiers, duration, critique, from battlefield order by posted desc limit 5");
+        if(!$stmt){
+            printf("Query Prep Failed: %s\n", $mysqli->error);
+            exit;
+        }
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+
+         while($row = $result->fetch_assoc()){
+            $ammo = htmlspecialchars($row['ammo']));
+            $soldiers = htmlspecialchars($row['soldiers']);
+            $duration = htmlspecialchars($row['duration'];
+            $critique = htmlspecialchars($row['critique'];
+            echo "ammo is ".$ammo".";
+            echo "soldiers is ".$soldiers".";
+            echo "duration is ".$duration".";
+            echo "critique is ".$critique".";
+        }
+
+        $stmt->close();
+
+
+
+?>
+
+</body>
+</html>

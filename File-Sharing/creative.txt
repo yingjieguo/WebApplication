@@ -1,0 +1,14 @@
+Team members:
+Zhen Cheng(444189), Yingjie Guo(445614) 
+
+Link: http://ec2-54-244-11-86.us-west-2.compute.amazonaws.com/~joecz/start.php
+
+Functions:
+Delete account
+Login
+Logout
+Sign up
+Delete
+View
+Upload
+
