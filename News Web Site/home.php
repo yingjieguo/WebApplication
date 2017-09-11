@@ -10,7 +10,7 @@
 <body>
 
     <?php
-        $$_SESSION['token'] = substr(md5(rand()), 0, 10);
+        //$token = $_SESSION['token'];
         echo "<div id = \"login\">";
         if(!isset($_SESSION['user_id'])){
             echo "<form action = \"login.html\" method=\"POST\">";
@@ -51,14 +51,12 @@
             echo "<div id = \"function_area1\">";
             //post new story button
             echo "<form action=\"add_story.html\" method=\"POST\">";
-            echo "<input type = \"hidden\" name = \"token\" value=\"<?php echo $_SESSION['token'];?>\">";
             echo "<input type=\"submit\" value=\"Post New Story\" name=\"Post New Story\"/>";
             echo "</form>";
             echo "</div>";
             //search function button
             echo "<div id = \"function_area2\">";
             echo "<form action=\"search.php\" method=\"POST\">";
-            echo "<input type = \"hidden\" name = \"token\" value=\"<?php echo $_SESSION['token'];?>\">";
             echo "<input type=\"submit\" value =\"Search News\" name=\"Search News\"/>";
             echo "</form>";
 
@@ -121,7 +119,6 @@
                 echo "<form action=\"home.php#$story_id\" method=\"get\">";
                     echo "<input type=\"hidden\" name=\"story_id\" value=$story_id>";
                     echo "<input type=\"hidden\" name=\"edit\" value=true>";
-                    echo "<input type = \"hidden\" name = \"token\" value=\"<?php echo $_SESSION['token'];?>\">";
                     echo "<input type=\"submit\" value=\"Edit story\">";
                 echo "</form>";
                 //echo "</div>";
@@ -131,7 +128,6 @@
                 echo "<form action=\"delete_story.php\" method=\"post\">";
                     echo "<input type=\"hidden\" name=\"story_id\" value=$story_id>";
                     echo "<input type=\"submit\" value=\"Delete story\">";
-                    echo "<input type = \"hidden\" name = \"token\" value=\"<?php echo $_SESSION['token'];?>\">";
                 echo "</form>";
                 echo "</div>";
 
@@ -150,7 +146,6 @@
                 echo "<div class=\"inner_story\">";
                 echo "<form action=\"home.php#$story_id\" method=\"get\">";
                     echo "<input type=\"submit\" value=\"Cancel changes\">";
-                    echo "<input type = \"hidden\" name = \"token\" value=\"<?php echo $_SESSION['token'];?>\">";
                 echo "</form>";
                 echo "</div>";
 
@@ -195,7 +190,6 @@
                     echo "<form action =\"home.php#$story_id\" method = \"get\">";
                         echo "<input type=\"hidden\" name=\"commentid\" value=$comment_id>";
                         echo "<input type=\"hidden\" name=\"story_id\" value=\"$story_id\"/>";
-                        echo "<input type = \"hidden\" name = \"token\" value=\"<?php echo $_SESSION['token'];?>\">";
                         echo "<input type=\"hidden\" name=\"commentedit\" value=true>";
                         echo "<input type=\"submit\" value=\"Edit comment\">";
                     echo "</form>";

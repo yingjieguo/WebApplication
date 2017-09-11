@@ -7,9 +7,6 @@ if(!$stmt){
 	printf("Query Prep Failed: %s\n", $mysqli->error);
     exit;
 }
-if($_SESSION['token'] != $_POST['token']){
-		die("Request forgery detected");
-}
 
 $stmt->bind_param('isss',$user_id,$title,$story_content,$story_link);
 $user_id = $_SESSION['user_id'];

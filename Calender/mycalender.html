@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js?ver=1.4.2"></script>
+    <title> Calendar </title>
+</head>
+
+<body>
+    <p>
+        <output id="result">Calendar:)</output>
+    </p>
+    <!-- login -->
+    <div id="loginform" data-role="main" class="ui-content">
+        <a href="#myPopup" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left">Login</a>
+        <div data-role="popup" id="myPopup" class="ui-content" style="min-width:250px;">
+            <form id=Logininfo>
+                <div id="login">
+                    <label for="username" class="ui-hidden-accessible">Username:</label>
+                    <input type="text" name="username" id="username" placeholder="Username">
+                    <label for="password" class="ui-hidden-accessible">Password:</label>
+                    <input type="password" name="password" id="password" placeholder="Password">
+                    <input type="submit" data-inline="true" value="Log in" id="loginButton">
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- create new account -->
+    <div id="registerform" data-role="main" class="ui-content">
+        <a href="#myPopup2" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left">Create a account</a>
+        <div data-role="popup" id="myPopup2" class="ui-content" style="min-width:250px;">
+            <form id="CreateAccount">
+                <div id="register">
+                    <label for="registerUsername" class="ui-hidden-accessible">Username:</label>
+                    <input type="text" name="registerUsername" id="registerUsername" placeholder="Username">
+                    <label for="registerPassword" class="ui-hidden-accessible">Password:</label>
+                    <input type="password" name="registerPassword" id="registerPassword" placeholder="Password">
+                    <input type="submit" data-inline="true" value="Register" id="registerButton">
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- show a datepicker when you enter the date -->
+    <!--     <script>
+    $(function() {
+        $("#date").datepicker({
+            showButtonPanel: true
+        });
+    });
+
+    $(function() {
+        $("#deleteDate").datepicker({
+            showButtonPanel: true
+        });
+    });
+    </script> -->
+    <!-- add a event -->
+    <div id="addEvent" data-role="main" class="ui-content">
+        <a href="#myPopup3" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left">Add Your Event</a>
+        <div data-role="popup" id="myPopup3" class="ui-content" style="min-width:250px;">
+            <form id="AddYourEvent">
+                <div id="addEventchart">
+                    <input type="text" id="title" placeholder="Event Title" required>
+                    <input type="text" id="date" placeholder="Event Date" required>
+                    <input type="text" id="time" placeholder="Time">
+                    <input type="text" id="share1" placeholder="Share to...">
+                    <input type="text" id="share2" placeholder="Share to...">
+                    <div class="tags">
+                        <select id="addEventTag">
+                            <option id="add_Optional" label="option">Choose Tag</option>
+                            <option id="important">Important</option>
+                            <option id="work">Work</option>
+                            <option id="family">family</option>
+                            <option id="personal">personal</option>
+                        </select>
+                    </div>
+                    <button type='button' id='addEventButton'>Add New Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--  delete a event -->
+    <div id="deleteEvent" data-role="main" class="ui-content">
+        <a href="#myPopup4" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left">Delete Your Event</a>
+        <div data-role="popup" id="myPopup4" class="ui-content" style="min-width:250px;">
+            <form id="Delete">
+                <div id="deleteEventChart">
+                    <input type="text" id="deleteTitle" placeholder="Event Title" required>
+                    <input type="text" id="deleteDate" placeholder="Event Date" required>
+                    <input type="text" id="deleteTime" placeholder="Event Time" required>
+                    <button type="button" id="deleteEventButton">Delete Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="editEvent" data-role="main" class="ui-content">
+        <a href="#myPopup5" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left">Edit Your Event</a>
+        <div data-role="popup" id="myPopup5" class="ui-content" style="min-width:250px;">
+            <form id="Edit">
+                <div id="eidtOldChart">
+                    <input type="text" id="oldTitle" placeholder="Old Event Title" required>
+                    <input type="text" id="oldDate" placeholder="Old Event Date" required>
+                    <input type="text" id="oldTime" placeholder="Old Event Time" required>
+                    <br>
+                </div>
+                <div id="eidtNewChart">
+                    Which do you want to edit?
+                    <input type="text" id="newTitle" placeholder="New Event Title">
+                    <input type="text" id="newDate" placeholder="New Event Date">
+                    <input type="text" id="newTime" placeholder="New Event Time">
+                    <input type="text" id="newshare" placeholder="NewShare to...">
+                    <div class="newtags">
+                        <select id="newEventTag">
+                            <option id="new_add_Optional" label="option">Choose New Tag</option>
+                            <option id="new_important">Important</option>
+                            <option id="new_work">Work</option>
+                            <option id="new_family">family</option>
+                            <option id="new_personal">personal</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" id="editEventButton">Edit Event</button>
+            </form>
+        </div>
+    </div>
+    <!-- log out -->
+    <div id="logout" data-role="main" class="ui-content">
+        <input type="button" id="logoutButton" data-inline="true" value="Log out" data-theme="a">
+    </div>
+    <!--for tag choose-->
+
+    <div id="filterform" data-role="main" class="ui-content">
+    <a href="#myPopup6" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left">filter</a>
+    <div data-role="popup" id="myPopup6" class="ui-content" style="min-width:250px;">
+        <div class="choosetag" id="filterEventTag">
+            Choose your tag filter:
+            <input type="radio" name="tag" value="Important" id="filter_important">
+            <label for="filter_important">Important</label>
+            <input type="radio" name="tag" value="Work" id="filter_work">
+            <label for="filter_work">Work</label>
+            <input type="radio" name="tag" value="family" id="filter_family">
+            <label for="filter_family">Family</label>
+            <input type="radio" name="tag" value="personal" id="filter_personal">
+            <label for="filter_personal">Personal</label>
+        </div>
+        <button type="button" id="filterButton">Filt</button>
+    </div>
+    </div>
+
+
+
+<!--     <div id="eventTag">
+    <select id="eventTag">
+        <option id="choose_add_Optional" label="option">Choose A Tag to SHOW</option>
+    </select>
+    </div> -->
+    <!-- realize add event -->
+    <div id='calendar'>
+        <div class="month">
+            <h2 id='monthHeader'>Current Month</h2>
+            <div class="calendar">
+                <table id="table" class="cal">
+                </table>
+                <script type="text/javascript" src="calendar.js"></script>
+            </div>
+            <div id="changeMonth" data-role="main" class="ui-content">
+                <br>
+                <input type="button" id='prevMonthButton' data-inline="true" class='ui-btn-inline' value="Previous Month" data-theme="a">
+                <input type="button" id='nextMonthButton' data-inline="true" class='ui-btn-inline' value="Next Month" data-theme="a">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

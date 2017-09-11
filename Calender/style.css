@@ -1,0 +1,73 @@
+#loginform {
+    float: right;
+    margin-top: 0px;
+}
+#welcome{
+    font-size:150%;
+    float: left;
+}
+p{
+    font-size:150%;
+    float: left;  
+}
+#registerform {
+    float: right;
+    margin-top: 0px;
+}
+#filterform {
+    float: right;
+    margin-top: 0px;
+}
+
+#addEvent {
+    float: left;
+    margin-top: 0px;
+}
+
+#deleteEvent {
+    float: left;
+    margin-top: 0px;
+}
+#editEvent {
+    float: left;
+    margin-top: 0px;
+}
+
+#logout {
+    float: right;
+/*    margin-right: 10px;*/
+    margin-top: 0px;
+}
+#eventTag{
+    float: right;
+    margin-top:100px;
+}
+#calendar {
+    margin-top: 0px;
+    background-color: #E6E6FA;
+    padding: 140px;
+}
+
+#changeMonth {
+    float: right;
+    margin-top: -20px;
+    margin-right: 25px;
+}
+table.cal {
+    width: 73%;
+    table-layout: fixed;
+    text-align: center;
+    margin-top: -30px;
+    margin-left: 120px;
+    empty-cells: show;
+}
+
+tr.day {
+    border: 4px;
+    height: 90px;
+    background-color: #ffe6e6;
+    width: 90px;
+    font-size: 120%;
+    vertical-align: top;
+    text-align: left;
+}

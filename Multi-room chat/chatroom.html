@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat Room!</title>
+    <!--   There is instruction for Bootstrap Example on W3C, the code is mainly referd by http://www.w3schools.com/bootstrap/bootstrap_theme_company.asp -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+    .jumbotron {
+        background-color: #ff751a;
+        color: #fff;
+    }
+    /*    
+    .bg-grey {
+        background-color: #f6f6f6;
+    }*/
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+    var username;
+    var usernames = {};
+    var current_room;
+    var banned = {};
+
+    var socketio = io.connect();
+
+    socketio.on("connect", function(data) {
+        //Once the connection is over, get the input username;
+        username = prompt("Please Enter a Username");
+        current_room = "mainroom";
+        socketio.emit('newUser', username);
+        $('#PP').hide();
+    });
+    socketio.on("message_to_client", function(username, msg) {
+        var string = username + "  :   " + msg;
+        document.getElementById("chatlog").appendChild(document.createTextNode(string));
+        document.getElementById("chatlog").appendChild(document.createElement("hr"));
+        $('#PP').hide();
+    });
+    //enter the room info
+    socketio.on("message", function(username, data) {
+        var string = username + "   " + data;
+        document.getElementById("chatlog").appendChild(document.createTextNode(string));
+        document.getElementById("chatlog").appendChild(document.createElement("hr"));
+        $('#PP').hide();
+    });
+    //display public rooms
+    socketio.on("updatepublicroom", function(rooms, room) {
+        //Updates the list of available chat rooms after one is added
+        // publicroomsCreated = rooms;
+        var available1 = ""; //''???????
+        for (var i in rooms) {
+            available1 = available1 + rooms[i] + '<br/>';
+            console.log(rooms[i]);
+
+        }
+        // alert("The room is created.");
+        var str = available1;
+        document.getElementById("publicrooms").innerHTML = str;
+        $('#PP').hide();
+    });
+
+    socketio.on("updateinfo", function(room) {
+        str = "You are in Room : " + room;
+        document.getElementById("info").innerHTML = str;
+        $('#PP').hide();
+    });
+
+    //display private rooms
+    socketio.on("updateprivateroom", function(rooms, room) {
+        //Updates the list of available chat rooms after one is added
+
+        var available2 = ""; //''???????
+        for (var i in rooms) {
+            available2 = available2 + rooms[i] + '<br/>';
+            console.log(rooms[i]);
+
+        }
+        // console.log("The room is created.");
+        var str = available2;
+        document.getElementById("privaterooms").innerHTML = str;
+        $('#PP').hide();
+    });
+
+    socketio.on("private_mess1", function(receive, send, msg) {
+        if (receive === username || send === username) {
+            str = "private message from " + send + " to " + receive + ":" + msg;
+            document.getElementById("chatlog").innerHTML = str;
+        }
+        $('#PP').hide();
+    });
+
+    //display users in one chat room
+    socketio.on("updateusers", function(room, us) {
+        //Update the list of useres in the current chatroom
+        var list = '';
+        for (var user in us) {
+            if (us[user] === room) {
+                list = list + user + '<br/>';
+                console.log(user);
+            }
+        }
+        var str = list;
+        document.getElementById("inroom").innerHTML = str;
+        $('#PP').hide();
+    });
+
+    socketio.on("updateadmin", function(room, owner) {
+        // alert("error1");
+        if (username === owner[room]) {
+            // alert("error");
+            $('#PP').show();
+        }
+    });
+    socketio.on("alert1", function(room) {
+        var str = "The " + room + " is not exist."
+        alert(str);
+    });
+
+
+    // socketio.on("privMess", function(target, msg, sender) {
+    //     if (target == username) {
+    //         document.getElementById("chatlog").appendChild(document.createElement("hr"));
+    //         $('#chatlog').append('<div style="color:red;font:Arial;size:90%;">' + sender + " : " + msg + '</div>');
+    //     }
+    //     $('#PP').hide();
+    // });
+
+    socketio.on("kickOut", function(target) {
+        if (username === target) {
+            socketio.emit("switchPublicRoom", "mainroom", banned);
+        }
+    });
+    socketio.on("banOut", function(target, room) {
+        banned[room] = target;
+        if (username === target) {
+            socketio.emit("switchPublicRoom", "mainroom", banned);
+            alert("here2");
+        }
+    });
+
+    function checkadmin() {
+        // alert("try1");
+        var currentuser = username;
+        socketio.emit("check_admin", currentuser);
+    }
+
+    function sendPublicMessage() {
+        //Send message to the chat room
+        var msg = $("#publicmessage").val();
+        socketio.emit("message_to_server", {
+            message: msg
+        });
+    }
+
+    function sendPrivateMessage() { //message
+        //Direct message implementation
+        var targetuser = $("#message_target").val();
+        var msg = $("#privatemessage").val();
+        var sender = username;
+        alert("Message sent.")
+            // $("#privatemessage").val()='';
+        socketio.emit('privateMsg', targetuser, sender, msg);
+    }
+
+    function addPrivateRoom() {
+        var room = $("#proom").val();
+        var pwd = $("#pwd").val();
+        var owner = username;
+        socketio.emit('addPrivateRoom', room, pwd, owner);
+    }
+
+    function addPublicRoom() {
+        var room = $("#groom").val();
+        var owner = username;
+        socketio.emit('addPublicRoom', room, owner);
+    }
+
+    function promptfuction(newroom) {
+        alert("The password is wrong.");
+    }
+
+    function kickUser() {
+        //Kick function that gets the target and source
+        var user = $("#kname").val();
+        var host = username;
+        socketio.emit('kick', user, host); //source???
+    }
+
+    function banUser() {
+        //Ban function that gets the target and source
+        var user = $("#bname").val();
+        var source = username;
+        var target = user;
+        socketio.emit('ban', target, source);
+    }
+
+    function grantOwnership() {
+        //Allows users to change ownership of a chat room
+        var target = $("#grantname").val();
+        socketio.emit('override_priv', target, username);
+    }
+
+    function joinPublicRoom() {
+        var room = $("#jgroom").val();
+        socketio.emit('switchPublicRoom', room, banned);
+    }
+
+    function joinPrivateRoom() {
+        var room = $("#jproom").val();
+        var pass = $("#jpwd").val();
+        socketio.emit('switchprivateroom', room, pass, banned);
+    }
+
+    function exit() {
+        socketio.emit("switchPublicRoom", "mainroom", banned);
+        alert("You have entered mainroom");
+    }
+    </script>
+</head>
+
+<body>
+    <div class="jumbotron text-center">
+        <h1>Welcome to the chat room!</h1>
+        <p>Create your own room free.</p>
+    </div>
+    <!--     <div class="modal fade hide" id="Modalname" role="dialog">
+        <div class="modal-dialog modal-sm-2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Create Your Name</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="username">Name:</label>
+                        <input type="text" class="form-control" id="username" placeholder="Enter Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="adduserbutton" onclick="createuser()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div class="container">
+        <div class="row">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Operation
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li><a data-toggle="modal" data-target="#Modalcreatepublic">create a public room</a></li>
+                    <li><a data-toggle="modal" data-target="#Modalcreateprivate">create a private room</a></li>
+                    <li><a data-toggle="modal" data-target="#Modaljoinpublic">Join a public room</a></li>
+                    <li><a data-toggle="modal" data-target="#Modaljoinprivate">Join a private room</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <button class="btn btn-primary pull-right" id="exitbutton">Exit</button>
+    </div>
+    <br>
+    <!-- Modal for create a room-->
+    <div class="modal fade" id="Modalcreatepublic" role="dialog">
+        <div class="modal-dialog modal-sm-2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title">Create Your Public Room</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="groom">Name:</label>
+                        <input type="text" class="form-control" id="groom" placeholder="Enter Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button class="btn btn-primary" id="addpublicroom" onclick="addPublicRoom()">Add a new Room</button> -->
+                    <button class="btn btn-primary" id="addpublicroom">Add a new Room</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal for create private room -->
+    <div class="modal fade" id="Modalcreateprivate" role="dialog">
+        <div class="modal-dialog modal-sm-2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title">Create Your Private Room</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="proom">Name:</label>
+                        <input type="text" class="form-control" id="proom" placeholder="Enter Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd">Password:</label>
+                        <input type="password" class="form-control" id="pwd" placeholder="Enter password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button class="btn btn-primary" id="addprivateroom" onclick="addPrivateRoom()">Add a new Room</button> -->
+                    <button class="btn btn-primary" id="addprivateroom">Add a new Room</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal for joining public room -->
+    <div class="modal fade" id="Modaljoinpublic" role="dialog">
+        <div class="modal-dialog modal-sm-2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title">Join a Public Room</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="jgroom">Name:</label>
+                        <input type="text" class="form-control" id="jgroom" placeholder="Enter Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button class="btn btn-primary" id="joinpublicroom" onclick="joinPublicRoom()">Join the Room</button> -->
+                    <button class="btn btn-primary" id="joinpublicroom">Join the Room</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal for join a private room -->
+    <div class="modal fade" id="Modaljoinprivate" role="dialog">
+        <div class="modal-dialog modal-sm-2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title">Join a Private Room</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="jproom">Name:</label>
+                        <input type="text" class="form-control" id="jproom" placeholder="Enter Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="jpwd">Password:</label>
+                        <input type="password" class="form-control" id="jpwd" placeholder="Enter password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button class="btn btn-primary" id="joinprivateroom" onclick="joinPrivateRoom()">Join the Room</button> -->
+                    <button class="btn btn-primary" id="joinprivateroom">Join the Room</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- notice for which room are you in -->
+    <div class="container">
+        <div class="well" id="info">
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 col-xs-2">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">
+                        <p>Private Rooms List</p>
+                    </div>
+                    <div class="panel-body">
+                        <div id="privaterooms"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-xs-4">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">
+                        <p>Public Rooms list:</p>
+                    </div>
+                    <div class="panel-body">
+                        <div id="publicrooms"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-xs-4">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">
+                        <p>Member list in your current room:</p>
+                    </div>
+                    <div class="panel-body">
+                        <div id="inroom"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-10 col-xs-4 pull-right">
+        <div class="panel panel-default text-center">
+            <div class="panel-heading">
+                <h3>ChatRoom</h3>
+            </div>
+            <div class="panel-body" id="chatlog">
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <!--      <div class="row"> -->
+        <button class="btn btn-primary pull-right" id="check">I'm the owner of this room</button>
+        <!--   </div> -->
+        <!--     </div> -->
+        <div>
+            <br>
+        </div>
+        <div class="container">
+            <!--         <div class="row"> -->
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" id="PP" type="button" data-toggle="dropdown">Owner Privilege
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li><a data-toggle="modal" data-target="#Modalkick">Kick a member</a></li>
+                    <li><a data-toggle="modal" data-target="#Modalban">Ban a member</a></li>
+                    <li><a data-toggle="modal" data-target="#Modalgrant">Grant Privilige</a></li>
+                </ul>
+            </div>
+        </div>
+        <!--         </div> -->
+    </div>
+    <!-- modal for kick -->
+    <div class="modal fade" id="Modalkick" role="dialog">
+        <div class="modal-dialog modal-sm-2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title">Kick a member</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="kname">Name:</label>
+                        <input type="text" class="form-control" id="kname" placeholder="Enter Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button class="btn btn-primary" id="kickbutton" onclick="kickUser()">Kick</button> -->
+                    <button class="btn btn-primary" id="kickbutton">Kick</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal for ban -->
+    <div class="modal fade" id="Modalban" role="dialog">
+        <div class="modal-dialog modal-sm-2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title">Ban a member</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="bname">Name:</label>
+                        <input type="text" class="form-control" id="bname" placeholder="Enter Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button class="btn btn-primary" id="kickbutton" onclick="banUser()">Ban</button> -->
+                    <button class="btn btn-primary" id="banbutton">Ban</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal for grant -->
+    <div class="modal fade" id="Modalgrant" role="dialog">
+        <div class="modal-dialog modal-sm-2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title">Grant a previlege</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="grantname">Name:</label>
+                        <input type="text" class="form-control" id="grantname" placeholder="Enter Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button class="btn btn-primary" id="grantbutton" onclick="grantOwnership()">Grant</button> -->
+                    <button class="btn btn-primary" id="grantbutton">Grant</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="container">
+        <div class="row">
+            <form class="form-inline">
+                <h4>Owner Privilege</h4>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="kick" placeholder="Enter Name" />
+                    <button class="btn btn-primary" id="kickbutton" onclick="kickUser()">Kick a member</button>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="ban" placeholder="Enter Name" />
+                    <button class="btn btn-primary" id="banbutton" onclick="banUser()">Ban a member</button>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="grant" placeholder="Enter Name" />
+                    <button class="btn btn-primary" id="grantbutton" onclick="grantOwnership()">Grant Priviliges</button>
+                </div>
+            </form>
+        </div>
+    </div> -->
+    <br>
+    <div class="container-fluid">
+        <div class="well">
+            <form>
+                <div class="form-group">
+                    <label for="publicmessage">
+                        <h4>Message to Room:</h4></label>
+                    <textarea id="publicmessage" class="form-control" rows="3" placeholder="Type message here"></textarea>
+                    <button class="btn btn-primary pull-right" id="button1">Send</button>
+                    <!-- both way is ok. to prevent the reload -->
+                    <!-- <input class="btn btn-primary pull-right" id="button1" onclick="sendPublicMessage()" value="Send"> -->
+                </div>
+                <div class="form-group">
+                    <label for="privatemessage">
+                        <h4>Private Message:</h4></label>
+                    <input type="text" id="message_target" class="form-control col-sm-6" placeholder="Username" />
+                    <textarea id="privatemessage" class="form-control" rows="3" placeholder="Type message here"></textarea>
+                    <button class="btn btn-primary pull-right" id="button2">Send Private</button>
+                    <!-- <button class="btn btn-primary pull-right" id="button2" onclick="sendPrivateMessage()">Send Private</button> -->
+                    <!-- <input type="button" class="btn btn-primary pull-right" id="button2" onclick="sendPrivateMessage()" Value="Send Private"> -->
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- 
+        <h2>Message to Room</h2>
+                <textarea id="message_text1" class="form-control" rows="3" placeholder="Type message here"></textarea>
+                <button class="btn btn-primary" id="button1" onclick="sendMessage()">Send</button>
+                
+      
+        <h2>Private Message</h2>
+                <input type="text" id="message_target" class="form-control" placeholder="Username"/>
+                <textarea id="message_text2" class="form-control" rows="3" placeholder="Type message here"></textarea>
+                <button class="btn btn-primary" id="button1" onclick="showPrivateList()">Send Private</button> -->
+    <script type="text/javascript">
+    document.getElementById("button1").addEventListener("click", function(event) {
+        sendPublicMessage();
+        event.preventDefault();
+    });
+    document.getElementById("button2").addEventListener("click", function(event) {
+        sendPrivateMessage();
+        event.preventDefault();
+    });
+    document.getElementById("kickbutton").addEventListener("click", function(event) {
+        kickUser();
+        event.preventDefault();
+    });
+    document.getElementById("banbutton").addEventListener("click", function(event) {
+        banUser();
+        event.preventDefault();
+    });
+    document.getElementById("grantbutton").addEventListener("click", function(event) {
+        grantOwnership();
+        event.preventDefault();
+    });
+    document.getElementById("joinprivateroom").addEventListener("click", function(event) {
+        joinPrivateRoom();
+        event.preventDefault();
+    });
+    document.getElementById("addprivateroom").addEventListener("click", function(event) {
+        addPrivateRoom();
+        event.preventDefault();
+    });
+    document.getElementById("joinpublicroom").addEventListener("click", function(event) {
+        joinPublicRoom();
+        event.preventDefault();
+    });
+    document.getElementById("addpublicroom").addEventListener("click", function(event) {
+        addPublicRoom();
+        event.preventDefault();
+    });
+    document.getElementById("check").addEventListener("click", function(event) {
+        checkadmin();
+        event.preventDefault();
+    });
+    document.getElementById("exitbutton").addEventListener("click", function(event) {
+        exit();
+        event.preventDefault();
+    });
+    </script>
+</body>
+
+</html>

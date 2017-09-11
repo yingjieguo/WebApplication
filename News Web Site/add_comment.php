@@ -12,9 +12,6 @@
         	exit;
     	}  
 		// Bind the parameter
-        if($_SESSION['token'] != $_POST['token']){
-            die("Request forgery detected");
-        }
 
     	$stmt->bind_param('iis', $user_id, $story_id, $comment);
     	$stmt->execute();
